@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SHAKE ANIMATION ON HORIZONTAL DIRECTION */
+.shake {
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.2s both;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	perspective: 1000px;
+}
+
+@keyframes shake {
+	10%,
+	90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+
+	20%,
+	80% {
+		transform: translate3d(2px, 0, 0);
+	}
+
+	30%,
+	50%,
+	70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+
+	40%,
+	60% {
+		transform: translate3d(4px, 0, 0);
+	}
+}
+
+/* Sleek AI Text Style */
+.chat-ai p {
+	font-family: 'Roboto Mono', monospace; /* Modern and readable monospace font */
+	color: #00e6b8; /* Soft teal for a futuristic vibe */
+	font-weight: 600;
+	font-size: 1.1rem; /* Slightly decreased font size */
+	text-shadow: 0 1px 4px rgba(0, 230, 184, 0.6); /* Subtle glow for emphasis */
+	letter-spacing: 0.05em; /* Slight spacing for better readability */
+}
+
+/* Smooth Slide-in Animation */
+.chat-ai {
+	animation: slideInSmooth 0.4s ease-out;
+}
+
+@keyframes slideInSmooth {
+	from {
+	  transform: translateY(-8%);
+	  opacity: 0;
+	}
+	to {
+	  transform: translateY(0);
+	  opacity: 1;
+	}
+}
+
+  
+ /* Ensure chat bubbles respect the width and allow scrolling when the text overflows */
+.chat-bubble {
+	max-width: 85%; /* Ensure chat bubbles don't take up the full width */
+	padding: 10px; /* Optional: Padding for better spacing inside the bubble */
+	box-sizing: border-box; /* Ensure padding is included in the width calculation */
+	word-wrap: break-word; /* Break long words to avoid overflow */
+	overflow-wrap: break-word; /* Ensure text inside wraps properly */
+	white-space: normal; /* Allow text to wrap naturally */
+	word-break: break-word; /* Break long words, like URLs, to avoid overflow */
+  
+	/* Enable horizontal scrolling without showing the scrollbar */
+	overflow-x: auto; /* Enables horizontal scrolling when the text overflows */
+	overflow-y: hidden; /* Hides the vertical scrollbar */
+	
+	/* Hide the horizontal scrollbar but still allow scrolling */
+	scrollbar-width: thin; /* Firefox */
+	scrollbar-color: transparent transparent; /* Firefox */
+  
+	-ms-overflow-style: none; /* Internet Explorer 10+ */
+	&::-webkit-scrollbar {
+	  width: 0px; /* Hide scrollbar in Webkit-based browsers (Chrome, Safari) */
+	  height: 0px; /* Hide scrollbar in Webkit-based browsers (Chrome, Safari) */
+	}
+  }
+  
+  /* Ensure Markdown content inside chat bubbles wraps properly */
+  .markdown-container {
+	max-width: 100%; /* Ensure Markdown content does not exceed the width of the chat bubble */
+	word-wrap: break-word; /* Break long words */
+	overflow-wrap: break-word; /* Ensure text inside wraps properly */
+	white-space: pre-wrap; /* Ensure that the text respects line breaks and wraps correctly */
+	word-break: break-word; /* Break long words to avoid overflow */
+	padding: 0 10px; /* Optional: Padding for better spacing inside the Markdown container */
+  }
+
+
