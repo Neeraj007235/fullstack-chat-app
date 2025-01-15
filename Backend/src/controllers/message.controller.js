@@ -1,6 +1,6 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
-import { generateResult } from "../lib/ai.js";  // Import AI function
+import { generateResult, generateImage } from "../lib/ai.js";  // Import AI function
 import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
 
@@ -41,13 +41,14 @@ export const sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
+    // Regular image upload to Cloudinary
     let imageUrl;
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
 
-    // Save the user's message
+    // Save the regular message (either text or image uploaded by user)
     const newMessage = new Message({
       senderId,
       receiverId,
@@ -59,39 +60,65 @@ export const sendMessage = async (req, res) => {
 
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage); // Emit to receiver immediately
+      io.to(receiverSocketId).emit("newMessage", newMessage); // Emit to receiver
     }
 
     const senderSocketId = getReceiverSocketId(senderId);
     if (senderSocketId) {
-      io.to(senderSocketId).emit("newMessage", newMessage); // Emit to sender immediately
+      io.to(senderSocketId).emit("newMessage", newMessage); // Emit to sender
     }
 
+    // Respond to the client at this point, after all the database and socket actions
     res.status(201).json(newMessage);
 
-    // Check if the message is an AI prompt
+    // If message starts with @ai (AI text response)
     if (text.startsWith("@ai ")) {
       const aiPrompt = text.replace("@ai ", "").trim();
-      const aiReply = await generateResult(aiPrompt); // Generate AI reply
+      const aiReply = await generateResult(aiPrompt); // Get AI text reply
 
-      // Create AI message
       const aiMessage = new Message({
-        senderId: receiverId, // AI acts as the receiver
-        receiverId: senderId, // Reply to the original sender
+        senderId: receiverId, // AI responds as the receiver
+        receiverId: senderId, // The message is for the sender
         text: aiReply,
-        isAI: true, // Mark message as AI
-        senderName: "AI", // Mark sender as AI
+        isAI: true,  // Mark message as AI-generated
+        senderName: "AI", // Sender's name is "AI"
       });
 
       await aiMessage.save();
 
-      // Emit AI message to both sender and receiver
+      // Emit the AI response to both users
       if (senderSocketId) {
-        io.to(senderSocketId).emit("newMessage", aiMessage); // Emit AI message to sender
+        io.to(senderSocketId).emit("newMessage", aiMessage);
       }
 
       if (receiverSocketId) {
-        io.to(receiverSocketId).emit("newMessage", aiMessage); // Emit AI message to receiver
+        io.to(receiverSocketId).emit("newMessage", aiMessage);
+      }
+    }
+
+    // If message starts with @imagine (Image generation via Hugging Face)
+    if (text.startsWith("@imagine ")) {
+      const imagePrompt = text.replace("@imagine ", "").trim();
+      const imageUrlFromHuggingFace = await generateImage(imagePrompt); // Get image URL from Hugging Face
+
+      // Save the generated image URL
+      const imageMessage = new Message({
+        senderId: receiverId, // AI responds as the receiver
+        receiverId: senderId, // The message is for the sender
+        image: imageUrlFromHuggingFace, // Store the image URL from Cloudinary
+        isAI: true,  // Mark as AI message
+        senderName: "AI",  // Sender's name is "AI"
+      });
+
+      await imageMessage.save();
+
+      // Emit the generated image to both users
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("newMessage", imageMessage);
+      }
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", imageMessage);
       }
     }
   } catch (error) {

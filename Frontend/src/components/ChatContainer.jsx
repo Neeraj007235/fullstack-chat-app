@@ -134,13 +134,22 @@ const ChatContainer = () => {
                 </div>
 
                 <div className="chat-bubble flex flex-col">
+                  {/* Image from AI */}
                   {message.image && (
-                    <img
-                      src={message.image}
-                      alt="Attachment"
-                      className="sm:max-w-[200px] rounded-md mb-2 cursor-pointer"
-                      onClick={() => handleImageClick(message.image)}
-                    />
+                    <div className="flex flex-col items-center">
+                      <img
+                        src={message.image}
+                        alt="Generated AI Image"
+                        className="sm:max-w-[400px] max-h-[500px] rounded-md mb-2 cursor-pointer"
+                        onClick={() => handleImageClick(message.image)}
+                      />
+                      {/* Optional: Add a brief caption under the image */}
+                      {message.isAI && (
+                        <p className="text-xs text-center text-gray-600 mt-1">
+                          (AI-generated image)
+                        </p>
+                      )}
+                    </div>
                   )}
                   {/* Use Markdown for AI messages */}
                   {message.isAI ? (
