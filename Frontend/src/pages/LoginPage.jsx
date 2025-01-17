@@ -10,10 +10,22 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
   const { login, isLoggingIn } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Basic validation
+    if (!formData.email || !formData.password) {
+      setErrorMessage("Both email and password are required.");
+      return; // Prevent form submission if fields are empty
+    }
+
+    // Clear previous error messages
+    setErrorMessage("");
+
+    // Proceed with login
     login(formData);
   };
 
@@ -38,6 +50,7 @@ const LoginPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email Field */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Email</span>
@@ -56,6 +69,7 @@ const LoginPage = () => {
               </div>
             </div>
 
+            {/* Password Field */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Password</span>
@@ -85,6 +99,14 @@ const LoginPage = () => {
               </div>
             </div>
 
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="text-red-500 text-sm mt-2">
+                <p>{errorMessage}</p>
+              </div>
+            )}
+
+            {/* Submit Button */}
             <button type="submit" className="btn btn-primary w-full" disabled={isLoggingIn}>
               {isLoggingIn ? (
                 <>
@@ -116,4 +138,5 @@ const LoginPage = () => {
     </div>
   );
 };
+
 export default LoginPage;
