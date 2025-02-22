@@ -49,9 +49,10 @@ export const sendMessage = async (req, res) => {
     // Save the regular message
     const newMessage = await saveMessage(senderId, receiverId, text, imageUrl);
 
-    // Emit the message to both sender and receiver
+    // Emit the message to both sender and receiver 
     const receiverSocketId = getReceiverSocketId(receiverId);
     const senderSocketId = getReceiverSocketId(senderId);
+
     emitToSockets(senderSocketId, receiverSocketId, newMessage);
 
     res.status(201).json(newMessage);
