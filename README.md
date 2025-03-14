@@ -37,7 +37,7 @@ You can view the live preview of the project [here](https://fullstack-chat-app-k
 ![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-11C8D1?style=for-the-badge&logo=render&logoColor=white)
 
-### Method 1: Manual Installation
+### Manual Installation
 
 1. **Fork this repository:** Click the Fork button located in the top-right corner of this page.
 2. **Clone the repository:**
